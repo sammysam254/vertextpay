@@ -312,39 +312,8 @@ async function initiateDeposit() {
         showToast('Payment window closed', 'info');
         setButtonLoading(btn, false);
       },
-      callback: async (response) => {
-        showToast('Verifying payment...', 'info');
-        setButtonLoading(btn, true);
-
-        try {
-          const { data: { session } } = await supabaseClient.auth.getSession();
-
-          const res = await fetch(`${cfg.SUPABASE_URL}/functions/v1/verify-deposit`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${session.access_token}`,
-              'apikey': cfg.SUPABASE_ANON_KEY,
-            },
-            body: JSON.stringify({ reference: response.reference })
-          });
-
-          const result = await res.json();
-
-          if (result.success) {
-            currentBalance = result.new_balance;
-            updateBalanceDisplay(currentBalance);
-            showToast(`${formatCurrency(result.amount)} deposited successfully! 🎉`, 'success', 6000);
-            await loadTransactions();
-          } else {
-            showToast(`Verification failed: ${result.error}`, 'error', 6000);
-          }
-        } catch (err) {
-          console.error('Verify deposit error:', err);
-          showToast('Payment received but verification failed. Contact support.', 'error', 8000);
-        }
-
-        setButtonLoading(btn, false);
+      callback: function (response) {
+        verifyPayment(response.reference, btn);
       }
     });
 
@@ -355,6 +324,42 @@ async function initiateDeposit() {
     openModal('deposit-modal'); // re-open modal so user can try again
     setButtonLoading(btn, false);
   }
+}
+
+async function verifyPayment(reference, btn) {
+  showToast('Verifying payment...', 'info');
+  setButtonLoading(btn, true);
+  const cfg = window.VERTEXT_CONFIG;
+
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+
+    const res = await fetch(`${cfg.SUPABASE_URL}/functions/v1/verify-deposit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': cfg.SUPABASE_ANON_KEY,
+      },
+      body: JSON.stringify({ reference })
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      currentBalance = result.new_balance;
+      updateBalanceDisplay(currentBalance);
+      showToast(`${formatCurrency(result.amount)} deposited successfully! 🎉`, 'success', 6000);
+      await loadTransactions();
+    } else {
+      showToast(`Verification failed: ${result.error}`, 'error', 6000);
+    }
+  } catch (err) {
+    console.error('Verify deposit error:', err);
+    showToast('Payment received but verification failed. Contact support.', 'error', 8000);
+  }
+
+  setButtonLoading(btn, false);
 }
 
 
