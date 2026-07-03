@@ -18,6 +18,9 @@ create table if not exists public.profiles (
 
 alter table public.profiles enable row level security;
 
+-- Add column if table already exists from previous runs
+alter table public.profiles add column if not exists banned boolean not null default false;
+
 drop policy if exists "Users can view own profile"   on public.profiles;
 drop policy if exists "Users can update own profile" on public.profiles;
 drop policy if exists "Users can insert own profile" on public.profiles;
