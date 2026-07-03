@@ -216,10 +216,10 @@ function renderBankAccounts() {
 
   list.innerHTML = bankAccounts.map(acct => `
     <div class="bank-item">
-      <div class="bank-icon">🏦</div>
+      <div class="bank-icon">📱</div>
       <div class="bank-details">
-        <div class="bank-name">${acct.bank_name}</div>
-        <div class="bank-account-num">${acct.account_name} • ****${acct.account_number.slice(-4)}</div>
+        <div class="bank-name">M-Pesa</div>
+        <div class="bank-account-num">${acct.account_name} • ${acct.account_number}</div>
       </div>
       <button class="btn btn-sm btn-danger" onclick="deleteBankAccount('${acct.id}')">Remove</button>
     </div>
@@ -231,13 +231,13 @@ function populateBankSelect() {
   if (!select) return;
 
   if (!bankAccounts.length) {
-    select.innerHTML = '<option value="">No bank accounts saved</option>';
+    select.innerHTML = '<option value="">No M-Pesa accounts saved</option>';
     return;
   }
 
   select.innerHTML = bankAccounts.map(acct => `
     <option value="${acct.id}">
-      ${acct.bank_name} — ${acct.account_name} ****${acct.account_number.slice(-4)}
+      M-Pesa — ${acct.account_name} (${acct.account_number})
     </option>
   `).join('');
 }
@@ -366,7 +366,7 @@ async function verifyPayment(reference, btn) {
 // ─── WITHDRAWAL ───────────────────────────────────────────────
 function openWithdrawModal() {
   if (!bankAccounts.length) {
-    showToast('Please add a bank account first', 'error');
+    showToast('Please add an M-Pesa account first', 'error');
     openModal('add-bank-modal');
     return;
   }
@@ -449,12 +449,12 @@ async function saveBankAccount() {
   const acctName   = document.getElementById('account-name-input').value.trim();
 
   if (!bankName || !bankCode || !acctNum || !acctName) {
-    showToast('Please fill in all bank account fields', 'error');
+    showToast('Please fill in all fields', 'error');
     return;
   }
 
-  if (!/^\d{10}$/.test(acctNum)) {
-    showToast('Account number must be 10 digits', 'error');
+  if (!/^\d{9,12}$/.test(acctNum)) {
+    showToast('Mobile number must be between 9 and 12 digits (e.g. 0712345678)', 'error');
     return;
   }
 
@@ -470,9 +470,9 @@ async function saveBankAccount() {
   });
 
   if (error) {
-    showToast('Failed to save bank account', 'error');
+    showToast('Failed to save M-Pesa account', 'error');
   } else {
-    showToast('Bank account saved!', 'success');
+    showToast('M-Pesa account saved!', 'success');
     closeModal('add-bank-modal');
     // Clear form
     ['bank-name-input','bank-code-input','account-number-input','account-name-input']

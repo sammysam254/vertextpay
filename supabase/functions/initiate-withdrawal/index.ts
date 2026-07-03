@@ -70,7 +70,7 @@ serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          type: "nuban",
+          type: "mobile_money",
           name: bankAccount.account_name,
           account_number: bankAccount.account_number,
           bank_code: bankAccount.bank_code,

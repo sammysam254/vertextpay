@@ -480,16 +480,16 @@
           </div>
         </div>
 
-        <!-- Bank Accounts -->
+        <!-- M-Pesa Accounts -->
         <div class="card" style="padding:20px">
           <div class="section-title-sm">
-            <span>🏦 Bank Accounts</span>
+            <span>📱 M-Pesa Accounts</span>
             <button class="btn btn-ghost btn-sm" id="add-bank-btn">+ Add</button>
           </div>
           <div id="bank-account-list"></div>
           <div id="bank-empty" class="empty-state" style="padding:20px 0">
-            <div class="empty-state-icon" style="font-size:32px">🏦</div>
-            <div class="empty-state-text text-sm">No bank accounts saved.<br/>Add one to enable withdrawals.</div>
+            <div class="empty-state-icon" style="font-size:32px">📱</div>
+            <div class="empty-state-text text-sm">No M-Pesa numbers saved.<br/>Add one to enable withdrawals.</div>
           </div>
         </div>
 
@@ -563,9 +563,9 @@
         <button class="modal-close" onclick="closeModal('withdraw-modal')">✕</button>
       </div>
       <div class="form-group">
-        <label class="form-label">Bank Account</label>
+        <label class="form-label">M-Pesa Recipient</label>
         <select id="withdraw-bank-select" class="form-input">
-          <option value="">Select bank account...</option>
+          <option value="">Select M-Pesa account...</option>
         </select>
       </div>
       <div class="form-group">
@@ -602,41 +602,34 @@
   <div class="modal-overlay" id="add-bank-modal">
     <div class="modal">
       <div class="modal-header">
-        <h2 class="modal-title">🏦 Add Bank Account</h2>
+        <h2 class="modal-title">📱 Add M-Pesa Account</h2>
         <button class="modal-close" onclick="closeModal('add-bank-modal')">✕</button>
       </div>
       <p class="text-secondary text-sm" style="margin-bottom:20px">
-        This account will be used for withdrawals. Saved securely.
+        Enter your registered M-Pesa details for direct withdrawals.
       </p>
+      <!-- Hidden bank inputs for compatibility -->
+      <input type="hidden" id="bank-name-input" value="M-Pesa" />
+      <input type="hidden" id="bank-code-input" value="MPESA" />
+      
       <div class="form-group">
-        <label class="form-label">Bank Name</label>
-        <input type="text" id="bank-name-input" class="form-input" placeholder="e.g. Chase Bank" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">
-          Bank Code
-          <span style="color:var(--text-muted);font-weight:400"> (Paystack bank code)</span>
-        </label>
-        <input type="text" id="bank-code-input" class="form-input" placeholder="e.g. 011" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Account Number</label>
+        <label class="form-label">M-Pesa Mobile Number</label>
         <input
           type="text"
           id="account-number-input"
           class="form-input"
-          placeholder="10-digit account number"
-          maxlength="10"
+          placeholder="e.g. 0712345678"
+          maxlength="12"
           inputmode="numeric"
         />
       </div>
       <div class="form-group">
-        <label class="form-label">Account Holder Name</label>
-        <input type="text" id="account-name-input" class="form-input" placeholder="As it appears on your bank" />
+        <label class="form-label">Registered Name</label>
+        <input type="text" id="account-name-input" class="form-input" placeholder="Name as registered on M-Pesa" />
       </div>
       <button class="btn btn-primary w-full" id="save-bank-btn" style="margin-top:4px">
         <div class="spinner"></div>
-        <span class="btn-text">💾 Save Bank Account</span>
+        <span class="btn-text">💾 Save M-Pesa Account</span>
       </button>
     </div>
   </div>
