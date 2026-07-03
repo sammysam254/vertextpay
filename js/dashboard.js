@@ -269,20 +269,39 @@ async function initiateDeposit() {
   const btn = document.getElementById('confirm-deposit-btn');
   setButtonLoading(btn, true);
 
+  // ── Ensure Paystack script is loaded ──────────────────────
+  if (typeof PaystackPop === 'undefined') {
+    try {
+      await new Promise((resolve, reject) => {
+        const existing = document.querySelector('script[src*="paystack"]');
+        if (existing) existing.remove();
+        const script = document.createElement('script');
+        script.src = 'https://js.paystack.co/v1/inline.js';
+        script.onload = resolve;
+        script.onerror = () => reject(new Error('Paystack script failed to load'));
+        document.head.appendChild(script);
+      });
+    } catch (e) {
+      showToast('Could not load Paystack. Check your internet connection.', 'error', 6000);
+      setButtonLoading(btn, false);
+      return;
+    }
+  }
+
   // Close modal, open Paystack popup
   closeModal('deposit-modal');
 
   const reference = generateReference();
-  const amountKobo = Math.round(amount * 100); // Paystack uses smallest unit
+  const amountSmallestUnit = Math.round(amount * 100); // Paystack: KES in cents
 
   try {
     const handler = PaystackPop.setup({
       key: cfg.PAYSTACK_PUBLIC_KEY,
       email: currentUser.email,
-      amount: amountKobo,
+      amount: amountSmallestUnit,
       currency: cfg.CURRENCY,
       ref: reference,
-      label: `Vertext Pay Deposit`,
+      label: 'Vertext Pay Deposit',
       metadata: {
         user_id: currentUser.id,
         custom_fields: [
@@ -290,11 +309,10 @@ async function initiateDeposit() {
         ]
       },
       onClose: () => {
-        showToast('Payment cancelled', 'info');
+        showToast('Payment window closed', 'info');
         setButtonLoading(btn, false);
       },
       callback: async (response) => {
-        // Payment completed — verify with edge function
         showToast('Verifying payment...', 'info');
         setButtonLoading(btn, true);
 
@@ -322,8 +340,8 @@ async function initiateDeposit() {
             showToast(`Verification failed: ${result.error}`, 'error', 6000);
           }
         } catch (err) {
-          showToast('Failed to verify payment. Contact support.', 'error', 8000);
           console.error('Verify deposit error:', err);
+          showToast('Payment received but verification failed. Contact support.', 'error', 8000);
         }
 
         setButtonLoading(btn, false);
@@ -332,10 +350,13 @@ async function initiateDeposit() {
 
     handler.openIframe();
   } catch (err) {
-    showToast('Failed to open payment. Check your connection.', 'error');
+    console.error('PaystackPop error:', err);
+    showToast(`Payment error: ${err.message || 'Could not open payment window'}`, 'error', 6000);
+    openModal('deposit-modal'); // re-open modal so user can try again
     setButtonLoading(btn, false);
   }
 }
+
 
 // ─── WITHDRAWAL ───────────────────────────────────────────────
 function openWithdrawModal() {
