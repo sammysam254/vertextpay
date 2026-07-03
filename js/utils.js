@@ -20,7 +20,7 @@ function showToast(message, type = 'info', duration = 4000) {
 }
 
 // ── Format currency ──────────────────────────────────────────
-function formatCurrency(amount, symbol = '$') {
+function formatCurrency(amount, symbol = window.VERTEXT_CONFIG?.CURRENCY_SYMBOL || 'KSh ') {
   return `${symbol}${Number(amount).toLocaleString('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
