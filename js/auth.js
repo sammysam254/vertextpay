@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       password: pass,
       options: {
         data: { full_name: name },
-        emailRedirectTo: `${window.location.origin}/dashboard.html`,
+        emailRedirectTo: `https://vertextpay.netlify.app/dashboard.html`,
       }
     });
 

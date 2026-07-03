@@ -28,8 +28,8 @@ enabled = true
 
 [auth]
 enabled = true
-site_url = "http://localhost:3000"
-additional_redirect_urls = ["https://vertext-pay.netlify.app"]
+site_url = "https://vertextpay.netlify.app"
+additional_redirect_urls = ["https://vertextpay.netlify.app/dashboard.html","https://vertextpay.netlify.app/auth.html"]
 jwt_expiry = 3600
 enable_refresh_token_rotation = true
 refresh_token_reuse_interval = 10
