@@ -12,6 +12,7 @@ create table if not exists public.profiles (
   id          uuid primary key references auth.users(id) on delete cascade,
   email       text not null,
   full_name   text,
+  banned      boolean not null default false,
   created_at  timestamptz default now()
 );
 
@@ -23,15 +24,29 @@ drop policy if exists "Users can insert own profile" on public.profiles;
 
 create policy "Users can view own profile"
   on public.profiles for select
-  using (auth.uid() = id);
+  using (auth.uid() = id and banned = false);
 
 create policy "Users can update own profile"
   on public.profiles for update
-  using (auth.uid() = id);
+  using (auth.uid() = id and banned = false);
 
 create policy "Users can insert own profile"
   on public.profiles for insert
   with check (auth.uid() = id);
+
+-- ─── BLOCKED IPS ─────────────────────────────
+create table if not exists public.blocked_ips (
+  ip          text primary key,
+  reason      text,
+  created_at  timestamptz default now()
+);
+
+alter table public.blocked_ips enable row level security;
+
+-- Nobody except service role can read/write blocked_ips
+create policy "Service role manage blocked_ips"
+  on public.blocked_ips for all
+  using (true);
 
 -- ─── WALLETS ─────────────────────────────────
 create table if not exists public.wallets (
@@ -51,7 +66,9 @@ drop policy if exists "Service role can update wallets" on public.wallets;
 
 create policy "Users can view own wallet"
   on public.wallets for select
-  using (auth.uid() = user_id);
+  using (auth.uid() = user_id and not exists (
+    select 1 from public.profiles where id = auth.uid() and banned = true
+  ));
 
 create policy "Service role can update wallets"
   on public.wallets for update
@@ -89,7 +106,9 @@ drop policy if exists "Service role can manage transactions" on public.transacti
 
 create policy "Users can view own transactions"
   on public.transactions for select
-  using (auth.uid() = user_id);
+  using (auth.uid() = user_id and not exists (
+    select 1 from public.profiles where id = auth.uid() and banned = true
+  ));
 
 create policy "Service role can manage transactions"
   on public.transactions for all
@@ -114,8 +133,12 @@ drop policy if exists "Users can manage own bank accounts" on public.bank_accoun
 
 create policy "Users can manage own bank accounts"
   on public.bank_accounts for all
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+  using (auth.uid() = user_id and not exists (
+    select 1 from public.profiles where id = auth.uid() and banned = true
+  ))
+  with check (auth.uid() = user_id and not exists (
+    select 1 from public.profiles where id = auth.uid() and banned = true
+  ));
 
 -- ─── AUTO-CREATE PROFILE + WALLET ON SIGNUP ───
 create or replace function public.handle_new_user()

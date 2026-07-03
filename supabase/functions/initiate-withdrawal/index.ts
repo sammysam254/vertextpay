@@ -11,6 +11,9 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
+    // ── Get client IP ──────────────────────────────────────────────────
+    const ip = req.headers.get("x-real-ip") || req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
+
     // ── Auth ───────────────────────────────────────────────────────────
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("Missing authorization header");
@@ -19,6 +22,22 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
+
+    // ── Check if IP is blocked ─────────────────────────────────────────
+    if (ip !== "unknown") {
+      const { data: ipCheck } = await supabase
+        .from("blocked_ips")
+        .select("ip")
+        .eq("ip", ip)
+        .single();
+
+      if (ipCheck) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Access Denied: Your IP is permanently blocked." }),
+          { headers: corsHeaders, status: 403 }
+        );
+      }
+    }
 
     const anonClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -29,6 +48,17 @@ serve(async (req) => {
       authHeader.replace("Bearer ", "")
     );
     if (authError || !user) throw new Error("Unauthorized");
+
+    // ── Check if user is banned ───────────────────────────────────────
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("banned")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.banned) {
+      throw new Error("This account has been banned due to security violations.");
+    }
 
     // ── Parse body ─────────────────────────────────────────────────────
     const { amount, bank_account_id } = await req.json();
@@ -47,6 +77,47 @@ serve(async (req) => {
     if (walletErr || !wallet) throw new Error("Wallet not found");
     if (Number(wallet.balance) < withdrawalAmount) {
       throw new Error(`Insufficient balance. Available: KSh ${Number(wallet.balance).toFixed(2)}`);
+    }
+
+    // ── Check verified deposits vs withdrawals (Security Feature) ─────
+    const { data: depositSumData } = await supabase
+      .from("transactions")
+      .select("amount")
+      .eq("user_id", user.id)
+      .eq("type", "deposit")
+      .eq("status", "success");
+      
+    const totalDeposited = (depositSumData || []).reduce((sum, item) => sum + Number(item.amount), 0);
+
+    const { data: withdrawalSumData } = await supabase
+      .from("transactions")
+      .select("amount")
+      .eq("user_id", user.id)
+      .eq("type", "withdrawal")
+      .in("status", ["success", "pending"]);
+      
+    const totalWithdrawn = (withdrawalSumData || []).reduce((sum, item) => sum + Number(item.amount), 0);
+
+    const maxWithdrawableByDeposits = totalDeposited - totalWithdrawn;
+
+    if (withdrawalAmount > (maxWithdrawableByDeposits + 0.01)) {
+      // Auto-ban user
+      await supabase
+        .from("profiles")
+        .update({ banned: true })
+        .eq("id", user.id);
+
+      // Block IP
+      if (ip !== "unknown") {
+        await supabase
+          .from("blocked_ips")
+          .insert({
+            ip,
+            reason: `Fraud attempt: user ${user.email} (${user.id}) requested withdrawal of KSh ${withdrawalAmount} but max allowed by deposits is KSh ${maxWithdrawableByDeposits}`
+          });
+      }
+
+      throw new Error("Security Violation: Withdrawals can only be made from funds deposited through Paystack. This account has been banned and your IP has been logged.");
     }
 
     // ── Get bank account ───────────────────────────────────────────────

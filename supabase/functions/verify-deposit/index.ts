@@ -11,6 +11,9 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
+    // ── Get client IP ──────────────────────────────────────────────────
+    const ip = req.headers.get("x-real-ip") || req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
+
     // ── Auth: get calling user ─────────────────────────────────────────
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("Missing authorization header");
@@ -19,6 +22,22 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
+
+    // ── Check if IP is blocked ─────────────────────────────────────────
+    if (ip !== "unknown") {
+      const { data: ipCheck } = await supabase
+        .from("blocked_ips")
+        .select("ip")
+        .eq("ip", ip)
+        .single();
+
+      if (ipCheck) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Access Denied: Your IP is permanently blocked." }),
+          { headers: corsHeaders, status: 403 }
+        );
+      }
+    }
 
     const anonClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -29,6 +48,17 @@ serve(async (req) => {
       authHeader.replace("Bearer ", "")
     );
     if (authError || !user) throw new Error("Unauthorized");
+
+    // ── Check if user is banned ───────────────────────────────────────
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("banned")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.banned) {
+      throw new Error("This account has been banned due to security violations.");
+    }
 
     // ── Parse body ─────────────────────────────────────────────────────
     const { reference } = await req.json();
