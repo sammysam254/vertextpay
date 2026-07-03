@@ -65,8 +65,8 @@ serve(async (req) => {
       throw new Error(`Payment not successful: ${paystackData.message}`);
     }
 
-    const paidAmountKobo = paystackData.data.amount; // in kobo/cents
-    const amountUSD = paidAmountKobo / 100;           // convert to dollars
+    const paidAmountCents = paystackData.data.amount; // in cents (Ksh cents)
+    const amountKES = paidAmountCents / 100;           // convert to Shillings
 
     // Ensure this payment belongs to this user (check metadata)
     const paidEmail = paystackData.data.customer?.email;
@@ -83,7 +83,7 @@ serve(async (req) => {
 
     if (walletErr || !wallet) throw new Error("Wallet not found");
 
-    const newBalance = Number(wallet.balance) + amountUSD;
+    const newBalance = Number(wallet.balance) + amountKES;
 
     const { error: updateErr } = await supabase
       .from("wallets")
@@ -99,7 +99,7 @@ serve(async (req) => {
         {
           user_id: user.id,
           type: "deposit",
-          amount: amountUSD,
+          amount: amountKES,
           status: "success",
           reference,
           description: `Deposit via Paystack`,
@@ -112,9 +112,9 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        amount: amountUSD,
+        amount: amountKES,
         new_balance: newBalance,
-        message: `$${amountUSD.toFixed(2)} deposited successfully`,
+        message: `KSh ${amountKES.toFixed(2)} deposited successfully`,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
     );

@@ -411,12 +411,12 @@
             <div>
               <div class="wallet-label">Total Balance</div>
               <div class="wallet-balance-wrap">
-                <span class="wallet-currency">$</span>
+                <span class="wallet-currency">KSh </span>
                 <div id="wallet-balance" data-value="0">0.00</div>
               </div>
               <div id="balance-updated"></div>
             </div>
-            <div class="wallet-badge">USD Wallet</div>
+            <div class="wallet-badge">KES Wallet</div>
           </div>
           <div class="wallet-actions">
             <button class="btn btn-primary" id="deposit-btn" style="flex:1">
@@ -435,12 +435,12 @@
           <div class="stat-card">
             <div class="stat-icon">📥</div>
             <div class="stat-label">Total Deposited</div>
-            <div class="stat-value purple" id="total-deposited">$0.00</div>
+            <div class="stat-value purple" id="total-deposited">KSh 0.00</div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">📤</div>
             <div class="stat-label">Total Withdrawn</div>
-            <div class="stat-value green" id="total-withdrawn">$0.00</div>
+            <div class="stat-value green" id="total-withdrawn">KSh 0.00</div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">📋</div>
@@ -523,25 +523,25 @@
         Enter the amount to deposit. You'll be redirected to Paystack's secure payment page.
       </p>
       <div class="form-group">
-        <label class="form-label">Amount (USD)</label>
+        <label class="form-label">Amount (KES)</label>
         <div class="amount-input-wrap">
-          <span class="amount-prefix">$</span>
+          <span class="amount-prefix">KSh</span>
           <input
             type="number"
             id="deposit-amount"
             class="form-input"
             placeholder="0.00"
-            min="1"
-            step="0.01"
+            min="100"
+            step="1"
             autofocus
           />
         </div>
         <div class="preset-amounts">
-          <button class="preset-btn" onclick="document.getElementById('deposit-amount').value='10'">$10</button>
-          <button class="preset-btn" onclick="document.getElementById('deposit-amount').value='50'">$50</button>
-          <button class="preset-btn" onclick="document.getElementById('deposit-amount').value='100'">$100</button>
-          <button class="preset-btn" onclick="document.getElementById('deposit-amount').value='500'">$500</button>
-          <button class="preset-btn" onclick="document.getElementById('deposit-amount').value='1000'">$1,000</button>
+          <button class="preset-btn" onclick="document.getElementById('deposit-amount').value='500'">500</button>
+          <button class="preset-btn" onclick="document.getElementById('deposit-amount').value='1000'">1,000</button>
+          <button class="preset-btn" onclick="document.getElementById('deposit-amount').value='2000'">2,000</button>
+          <button class="preset-btn" onclick="document.getElementById('deposit-amount').value='5000'">5,000</button>
+          <button class="preset-btn" onclick="document.getElementById('deposit-amount').value='10000'">10,000</button>
         </div>
       </div>
       <div id="deposit-error" class="alert alert-error hidden"></div>
@@ -570,18 +570,18 @@
       </div>
       <div class="form-group">
         <label class="form-label">
-          Amount (USD)
-          <span style="color:var(--text-muted);font-weight:400"> · Available: <span id="withdraw-max">$0.00</span></span>
+          Amount (KES)
+          <span style="color:var(--text-muted);font-weight:400"> · Available: <span id="withdraw-max">KSh 0.00</span></span>
         </label>
         <div class="amount-input-wrap">
-          <span class="amount-prefix">$</span>
+          <span class="amount-prefix">KSh</span>
           <input
             type="number"
             id="withdraw-amount"
             class="form-input"
             placeholder="0.00"
-            min="1"
-            step="0.01"
+            min="100"
+            step="1"
           />
         </div>
         <div class="preset-amounts">

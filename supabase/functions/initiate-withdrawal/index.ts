@@ -35,7 +35,7 @@ serve(async (req) => {
     if (!amount || !bank_account_id) throw new Error("Missing amount or bank_account_id");
 
     const withdrawalAmount = Number(amount);
-    if (withdrawalAmount < 1) throw new Error("Minimum withdrawal is $1.00");
+    if (withdrawalAmount < 100) throw new Error("Minimum withdrawal is KSh 100");
 
     // ── Check wallet balance ───────────────────────────────────────────
     const { data: wallet, error: walletErr } = await supabase
@@ -46,7 +46,7 @@ serve(async (req) => {
 
     if (walletErr || !wallet) throw new Error("Wallet not found");
     if (Number(wallet.balance) < withdrawalAmount) {
-      throw new Error(`Insufficient balance. Available: $${Number(wallet.balance).toFixed(2)}`);
+      throw new Error(`Insufficient balance. Available: KSh ${Number(wallet.balance).toFixed(2)}`);
     }
 
     // ── Get bank account ───────────────────────────────────────────────
@@ -74,7 +74,7 @@ serve(async (req) => {
           name: bankAccount.account_name,
           account_number: bankAccount.account_number,
           bank_code: bankAccount.bank_code,
-          currency: "USD",
+          currency: "KES",
         }),
       });
 
@@ -139,7 +139,7 @@ serve(async (req) => {
         recipient: recipientCode,
         reason: `Vertext Pay withdrawal — ${reference}`,
         reference,
-        currency: "USD",
+        currency: "KES",
       }),
     });
 
@@ -163,7 +163,7 @@ serve(async (req) => {
         success: true,
         transfer_code: transferData.data.transfer_code,
         new_balance: newBalance,
-        message: `$${withdrawalAmount.toFixed(2)} withdrawal initiated. Funds will arrive shortly.`,
+        message: `KSh ${withdrawalAmount.toFixed(2)} withdrawal initiated. Funds will arrive shortly.`,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
     );

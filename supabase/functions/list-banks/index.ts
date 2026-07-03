@@ -10,7 +10,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const response = await fetch("https://api.paystack.co/bank?currency=USD&type=nuban", {
+    const response = await fetch("https://api.paystack.co/bank?currency=KES&type=nuban", {
       headers: {
         Authorization: `Bearer ${Deno.env.get("PAYSTACK_SECRET_KEY")}`,
       },
