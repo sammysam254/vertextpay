@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Dashboard — Vertext Pay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <style>
+    /* ── Dashboard Layout ──────────────────────────────────── */
+    .dashboard-page {
+      min-height: 100vh;
+      background: var(--bg-base);
+    }
+
+    /* ── Top Nav ───────────────────────────────────────────── */
+    .dash-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,10,18,0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+    }
+
+    .dash-nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .dash-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .dash-logo-icon {
+      width: 34px; height: 34px;
+      background: var(--grad-primary);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+
+    .dash-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dash-user-email {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--grad-primary);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    /* ── Main Grid ─────────────────────────────────────────── */
+    .dash-main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .dash-left { display: flex; flex-direction: column; gap: 24px; }
+    .dash-right { display: flex; flex-direction: column; gap: 24px; }
+
+    /* ── Wallet Card ───────────────────────────────────────── */
+    .wallet-card {
+      background: linear-gradient(135deg, #1E1B4B 0%, #0F172A 60%, #0D2218 100%);
+      border: 1px solid rgba(108,99,255,0.25);
+      border-radius: var(--radius-xl);
+      padding: 36px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+    }
+
+    .wallet-card::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(108,99,255,0.3) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .wallet-card::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: -40px;
+      width: 150px; height: 150px;
+      background: radial-gradient(circle, rgba(0,217,165,0.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .wallet-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 28px;
+    }
+
+    .wallet-label {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 8px;
+    }
+
+    .wallet-balance-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .wallet-currency {
+      font-size: 24px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.6);
+    }
+
+    #wallet-balance {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 52px;
+      font-weight: 800;
+      background: var(--grad-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    #balance-updated {
+      font-size: 12px;
+      color: rgba(255,255,255,0.3);
+      margin-top: 4px;
+    }
+
+    .wallet-badge {
+      background: rgba(0,217,165,0.15);
+      border: 1px solid rgba(0,217,165,0.2);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .wallet-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 32px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ── Stats Row ─────────────────────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--grad-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      transition: all var(--duration) var(--ease);
+    }
+
+    .stat-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+
+    .stat-icon {
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .stat-value.green { color: var(--accent); }
+    .stat-value.purple { color: var(--primary-light); }
+
+    /* ── Transactions ──────────────────────────────────────── */
+    .section-title-sm {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    #transaction-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .txn-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      transition: background var(--duration) var(--ease);
+      cursor: default;
+    }
+
+    .txn-item:hover { background: var(--bg-elevated); }
+
+    .txn-icon {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .txn-icon-deposit {
+      background: rgba(108,99,255,0.15);
+      color: var(--primary-light);
+    }
+
+    .txn-icon-withdrawal {
+      background: rgba(0,217,165,0.12);
+      color: var(--accent);
+    }
+
+    .txn-details { flex: 1; min-width: 0; }
+    .txn-description { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .txn-date { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    .txn-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    .txn-amount { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; }
+    .txn-amount-deposit { color: var(--primary-light); }
+    .txn-amount-withdrawal { color: var(--accent); }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--text-muted);
+    }
+    .empty-state-icon { font-size: 48px; margin-bottom: 14px; opacity: 0.5; }
+    .empty-state-text { font-size: 15px; }
+
+    /* ── Bank Accounts (sidebar) ───────────────────────────── */
+    .bank-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .bank-item:last-child { border-bottom: none; }
+
+    .bank-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: var(--bg-elevated);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .bank-details { flex: 1; min-width: 0; }
+    .bank-name { font-size: 13px; font-weight: 600; }
+    .bank-account-num { font-size: 12px; color: var(--text-muted); }
+
+    /* ── Amount input with USD prefix ──────────────────────── */
+    .amount-input-wrap {
+      position: relative;
+    }
+
+    .amount-prefix {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 16px;
+      pointer-events: none;
+    }
+
+    .amount-input-wrap .form-input {
+      padding-left: 36px;
+      font-size: 20px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      height: 56px;
+    }
+
+    /* Preset amounts */
+    .preset-amounts {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .preset-btn {
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--duration) var(--ease);
+    }
+
+    .preset-btn:hover {
+      background: var(--bg-hover);
+      border-color: var(--primary);
+      color: var(--primary-light);
+    }
+
+    /* ── Responsive ─────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .dash-main {
+        grid-template-columns: 1fr;
+        padding: 20px 16px;
+      }
+
+      .dash-right { order: -1; }
+
+      #wallet-balance { font-size: 38px; }
+      .wallet-card { padding: 24px; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+
+      .dash-user-email { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .stats-row { grid-template-columns: 1fr; }
+      .wallet-actions { flex-direction: column; }
+      .wallet-actions .btn { justify-content: center; }
+    }
+  </style>
+</head>
+<body class="dashboard-page">
+
+  <!-- ── Top Nav ─────────────────────────────────────────────── -->
+  <nav class="dash-nav">
+    <div class="container dash-nav-inner">
+      <a href="index.html" class="dash-logo">
+        <div class="dash-logo-icon">⚡</div>
+        <span>Vertext <span class="text-gradient">Pay</span></span>
+      </a>
+      <div class="dash-user">
+        <span class="dash-user-email" id="user-email"></span>
+        <div class="avatar" id="user-avatar">U</div>
+        <button class="btn btn-ghost btn-sm" id="logout-btn">Sign Out</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Main Dashboard ──────────────────────────────────────── -->
+  <main>
+    <div class="dash-main">
+
+      <!-- LEFT COLUMN ──────────────────────────────────────── -->
+      <div class="dash-left">
+
+        <!-- Wallet Card -->
+        <div class="wallet-card">
+          <div class="wallet-card-header">
+            <div>
+              <div class="wallet-label">Total Balance</div>
+              <div class="wallet-balance-wrap">
+                <span class="wallet-currency">$</span>
+                <div id="wallet-balance" data-value="0">0.00</div>
+              </div>
+              <div id="balance-updated"></div>
+            </div>
+            <div class="wallet-badge">USD Wallet</div>
+          </div>
+          <div class="wallet-actions">
+            <button class="btn btn-primary" id="deposit-btn" style="flex:1">
+              <span>↓</span>
+              <span class="btn-text">Deposit</span>
+            </button>
+            <button class="btn btn-accent" id="withdraw-btn" style="flex:1">
+              <span>↑</span>
+              <span class="btn-text">Withdraw</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon">📥</div>
+            <div class="stat-label">Total Deposited</div>
+            <div class="stat-value purple" id="total-deposited">$0.00</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📤</div>
+            <div class="stat-label">Total Withdrawn</div>
+            <div class="stat-value green" id="total-withdrawn">$0.00</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📋</div>
+            <div class="stat-label">Transactions</div>
+            <div class="stat-value" id="txn-count">0</div>
+          </div>
+        </div>
+
+        <!-- Transactions -->
+        <div class="card" style="padding:24px">
+          <div class="section-title-sm">
+            <span>Transaction History</span>
+            <span class="text-sm text-muted">Last 20</span>
+          </div>
+          <div id="transaction-list"></div>
+          <div id="txn-empty" class="empty-state">
+            <div class="empty-state-icon">💳</div>
+            <div class="empty-state-text">No transactions yet.<br/>Make your first deposit!</div>
+            <button class="btn btn-primary" id="quick-deposit-btn" style="margin-top:16px">
+              ⚡ Deposit Now
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN ─────────────────────────────────────── -->
+      <div class="dash-right">
+
+        <!-- User info card -->
+        <div class="card" style="padding:20px">
+          <div class="flex items-center gap-3">
+            <div class="avatar" style="width:48px;height:48px;font-size:20px" id="user-avatar-large"></div>
+            <div>
+              <div style="font-weight:700;font-size:16px" id="user-name">...</div>
+              <div class="text-sm text-muted" id="user-email-card"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bank Accounts -->
+        <div class="card" style="padding:20px">
+          <div class="section-title-sm">
+            <span>🏦 Bank Accounts</span>
+            <button class="btn btn-ghost btn-sm" id="add-bank-btn">+ Add</button>
+          </div>
+          <div id="bank-account-list"></div>
+          <div id="bank-empty" class="empty-state" style="padding:20px 0">
+            <div class="empty-state-icon" style="font-size:32px">🏦</div>
+            <div class="empty-state-text text-sm">No bank accounts saved.<br/>Add one to enable withdrawals.</div>
+          </div>
+        </div>
+
+        <!-- Quick help -->
+        <div class="card" style="padding:20px;background:rgba(108,99,255,0.06)">
+          <div style="font-size:14px;font-weight:600;margin-bottom:10px">💡 How it works</div>
+          <div style="font-size:13px;color:var(--text-secondary);line-height:1.8">
+            <div>1. Click <strong style="color:var(--text-primary)">Deposit</strong> → Paystack popup opens</div>
+            <div>2. Pay with card or bank transfer</div>
+            <div>3. Balance updates automatically ✓</div>
+            <div>4. Click <strong style="color:var(--text-primary)">Withdraw</strong> to send to your bank</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ════════════════════════════════════════════════════════
+       MODALS
+  ════════════════════════════════════════════════════════ -->
+
+  <!-- ── Deposit Modal ──────────────────────────────────────── -->
+  <div class="modal-overlay" id="deposit-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">💳 Deposit Funds</h2>
+        <button class="modal-close" onclick="closeModal('deposit-modal')">✕</button>
+      </div>
+      <p class="text-secondary text-sm" style="margin-bottom:20px">
+        Enter the amount to deposit. You'll be redirected to Paystack's secure payment page.
+      </p>
+      <div class="form-group">
+        <label class="form-label">Amount (USD)</label>
+        <div class="amount-input-wrap">
+          <span class="amount-prefix">$</span>
+          <input
+            type="number"
+            id="deposit-amount"
+            class="form-input"
+            placeholder="0.00"
+            min="1"
+            step="0.01"
+            autofocus
+          />
+        </div>
+        <div class="preset-amounts">
+          <button class="preset-btn" onclick="document.getElementById('deposit-amount').value='10'">$10</button>
+          <button class="preset-btn" onclick="document.getElementById('deposit-amount').value='50'">$50</button>
+          <button class="preset-btn" onclick="document.getElementById('deposit-amount').value='100'">$100</button>
+          <button class="preset-btn" onclick="document.getElementById('deposit-amount').value='500'">$500</button>
+          <button class="preset-btn" onclick="document.getElementById('deposit-amount').value='1000'">$1,000</button>
+        </div>
+      </div>
+      <div id="deposit-error" class="alert alert-error hidden"></div>
+      <button class="btn btn-primary w-full btn-lg" id="confirm-deposit-btn">
+        <div class="spinner"></div>
+        <span class="btn-text">⚡ Pay with Paystack</span>
+      </button>
+      <p class="text-sm text-muted" style="text-align:center;margin-top:12px">
+        🔒 Secured by Paystack · SSL encrypted
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Withdraw Modal ─────────────────────────────────────── -->
+  <div class="modal-overlay" id="withdraw-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">↑ Withdraw Funds</h2>
+        <button class="modal-close" onclick="closeModal('withdraw-modal')">✕</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Bank Account</label>
+        <select id="withdraw-bank-select" class="form-input">
+          <option value="">Select bank account...</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">
+          Amount (USD)
+          <span style="color:var(--text-muted);font-weight:400"> · Available: <span id="withdraw-max">$0.00</span></span>
+        </label>
+        <div class="amount-input-wrap">
+          <span class="amount-prefix">$</span>
+          <input
+            type="number"
+            id="withdraw-amount"
+            class="form-input"
+            placeholder="0.00"
+            min="1"
+            step="0.01"
+          />
+        </div>
+        <div class="preset-amounts">
+          <button class="preset-btn" onclick="setMaxWithdraw()">Max</button>
+        </div>
+      </div>
+      <div style="background:rgba(255,181,71,0.08);border:1px solid rgba(255,181,71,0.2);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:16px;font-size:13px;color:var(--warning)">
+        ⚠️ Withdrawals are processed via Paystack Transfers and typically arrive within 1-24 hours.
+      </div>
+      <button class="btn btn-accent w-full btn-lg" id="confirm-withdraw-btn">
+        <div class="spinner"></div>
+        <span class="btn-text">↑ Initiate Withdrawal</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Add Bank Modal ─────────────────────────────────────── -->
+  <div class="modal-overlay" id="add-bank-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">🏦 Add Bank Account</h2>
+        <button class="modal-close" onclick="closeModal('add-bank-modal')">✕</button>
+      </div>
+      <p class="text-secondary text-sm" style="margin-bottom:20px">
+        This account will be used for withdrawals. Saved securely.
+      </p>
+      <div class="form-group">
+        <label class="form-label">Bank Name</label>
+        <input type="text" id="bank-name-input" class="form-input" placeholder="e.g. Chase Bank" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">
+          Bank Code
+          <span style="color:var(--text-muted);font-weight:400"> (Paystack bank code)</span>
+        </label>
+        <input type="text" id="bank-code-input" class="form-input" placeholder="e.g. 011" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Account Number</label>
+        <input
+          type="text"
+          id="account-number-input"
+          class="form-input"
+          placeholder="10-digit account number"
+          maxlength="10"
+          inputmode="numeric"
+        />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Account Holder Name</label>
+        <input type="text" id="account-name-input" class="form-input" placeholder="As it appears on your bank" />
+      </div>
+      <button class="btn btn-primary w-full" id="save-bank-btn" style="margin-top:4px">
+        <div class="spinner"></div>
+        <span class="btn-text">💾 Save Bank Account</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container"></div>
+
+  <!-- ── Scripts ─────────────────────────────────────────────── -->
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <!-- Paystack -->
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <!-- App -->
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script>
+    // Sync second avatar element with first
+    const observer = new MutationObserver(() => {
+      const main = document.getElementById('user-avatar');
+      const large = document.getElementById('user-avatar-large');
+      const emailCard = document.getElementById('user-email-card');
+      const emailNav = document.getElementById('user-email');
+      if (large && main) large.textContent = main.textContent;
+      if (emailCard && emailNav) emailCard.textContent = emailNav.textContent;
+    });
+    const mainAvatar = document.getElementById('user-avatar');
+    if (mainAvatar) observer.observe(mainAvatar, { childList: true, characterData: true, subtree: true });
+  </script>
+</body>
+</html>

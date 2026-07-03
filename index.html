@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Vertext Pay — The lightning-fast digital wallet. Deposit instantly via Paystack, withdraw to your bank in minutes." />
+  <title>Vertext Pay — Lightning-Fast Digital Wallet</title>
+
+  <!-- Preload critical fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <style>
+    /* ── Landing page specific ──────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding-top: 80px;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: var(--grad-glow);
+      pointer-events: none;
+    }
+
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+
+    .hero-orb-1 {
+      width: 500px; height: 500px;
+      background: rgba(108,99,255,0.18);
+      top: -100px; right: -100px;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .hero-orb-2 {
+      width: 350px; height: 350px;
+      background: rgba(0,217,165,0.12);
+      bottom: -50px; left: -50px;
+      animation: float 10s ease-in-out infinite reverse;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      padding: 80px 0;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(108,99,255,0.12);
+      border: 1px solid rgba(108,99,255,0.25);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary-light);
+      margin-bottom: 20px;
+    }
+
+    .hero-badge .dot {
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .hero-title {
+      font-size: clamp(38px, 5vw, 64px);
+      margin-bottom: 20px;
+    }
+
+    .hero-subtitle {
+      font-size: 18px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 36px;
+      max-width: 480px;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .hero-stat-value {
+      font-size: 26px;
+      font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .hero-stat-label {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* ── Wallet Card Mockup ──────────────────────────────────── */
+    .wallet-mockup {
+      position: relative;
+    }
+
+    .mockup-card {
+      background: linear-gradient(135deg, #1A1A35 0%, #12122A 100%);
+      border: 1px solid rgba(108,99,255,0.3);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 60px rgba(108,99,255,0.15);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .mockup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .mockup-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .mockup-chip {
+      width: 40px; height: 28px;
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      border-radius: 6px;
+      opacity: 0.8;
+    }
+
+    .mockup-balance-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
+    }
+
+    .mockup-balance {
+      font-size: 42px;
+      font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--grad-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 32px;
+    }
+
+    .mockup-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .mockup-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .mockup-action {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(108,99,255,0.15);
+      border: 1px solid rgba(108,99,255,0.2);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary-light);
+    }
+
+    .mockup-user { font-size: 13px; color: var(--text-muted); }
+
+    /* Floating mini cards */
+    .float-badge {
+      position: absolute;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    }
+
+    .float-badge-1 {
+      top: -20px; right: -30px;
+      animation: float 5s ease-in-out 1s infinite;
+    }
+
+    .float-badge-2 {
+      bottom: 20px; left: -40px;
+      animation: float 7s ease-in-out 0.5s infinite reverse;
+    }
+
+    .float-badge-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+
+    .float-badge-icon.green { background: rgba(0,217,165,0.15); }
+    .float-badge-icon.purple { background: rgba(108,99,255,0.15); }
+
+    .float-badge-text { font-size: 12px; font-weight: 600; }
+    .float-badge-sub  { font-size: 11px; color: var(--text-muted); }
+
+    /* ── Features Section ───────────────────────────────────── */
+    .features {
+      padding: 100px 0;
+      position: relative;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 60px;
+    }
+
+    .section-tag {
+      display: inline-block;
+      background: rgba(108,99,255,0.12);
+      border: 1px solid rgba(108,99,255,0.2);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary-light);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 4vw, 42px);
+      margin-bottom: 14px;
+    }
+
+    .section-subtitle {
+      color: var(--text-secondary);
+      font-size: 17px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--grad-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      transition: all 0.3s var(--ease);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--grad-primary);
+      opacity: 0;
+      transition: opacity 0.3s var(--ease);
+    }
+
+    .feature-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+    }
+
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+      background: rgba(108,99,255,0.12);
+      border: 1px solid rgba(108,99,255,0.15);
+    }
+
+    .feature-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .feature-desc {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    /* ── How it works ───────────────────────────────────────── */
+    .how-it-works {
+      padding: 80px 0;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      margin-top: 60px;
+    }
+
+    .step {
+      text-align: center;
+      position: relative;
+    }
+
+    .step-number {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: var(--grad-primary);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      margin: 0 auto 20px;
+      box-shadow: var(--shadow-btn);
+    }
+
+    .step-title { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+    .step-desc { color: var(--text-secondary); font-size: 14px; }
+
+    /* ── CTA ────────────────────────────────────────────────── */
+    .cta-section {
+      padding: 100px 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 300px;
+      background: radial-gradient(ellipse, rgba(108,99,255,0.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-title { font-size: clamp(32px, 5vw, 52px); margin-bottom: 16px; }
+    .cta-sub { color: var(--text-secondary); font-size: 18px; margin-bottom: 40px; }
+
+    /* ── Footer ─────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* ── Responsive ─────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .hero-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 40px;
+      }
+      .hero-cta { justify-content: center; }
+      .hero-stats { justify-content: center; }
+      .features-grid { grid-template-columns: 1fr; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .float-badge-1, .float-badge-2 { display: none; }
+      .footer-inner { flex-direction: column; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navbar ─────────────────────────────────────────────── -->
+  <nav class="navbar" id="navbar">
+    <div class="container navbar-inner">
+      <a href="/" class="logo">
+        <div class="logo-icon">⚡</div>
+        <span>Vertext <span class="text-gradient">Pay</span></span>
+      </a>
+      <div class="nav-links">
+        <a href="#features" class="btn btn-ghost btn-sm">Features</a>
+        <a href="#how" class="btn btn-ghost btn-sm">How it works</a>
+        <a href="auth.html" class="btn btn-ghost btn-sm">Sign in</a>
+        <a href="auth.html?tab=signup" class="btn btn-primary btn-sm">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Hero ───────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-left">
+          <div class="hero-badge">
+            <span class="dot"></span>
+            Instant Paystack deposits & withdrawals
+          </div>
+          <h1 class="hero-title">
+            Your Money,
+            <span class="text-gradient">Lightning Fast.</span>
+          </h1>
+          <p class="hero-subtitle">
+            Vertext Pay gives you a powerful digital wallet. Deposit instantly with Paystack, spend freely, and withdraw to your bank — all in seconds.
+          </p>
+          <div class="hero-cta">
+            <a href="auth.html?tab=signup" class="btn btn-primary btn-lg" id="hero-cta-btn">
+              ⚡ Create Free Wallet
+            </a>
+            <a href="auth.html" class="btn btn-ghost btn-lg">Sign In</a>
+          </div>
+          <div class="hero-stats">
+            <div>
+              <div class="hero-stat-value text-gradient">Instant</div>
+              <div class="hero-stat-label">Deposits</div>
+            </div>
+            <div>
+              <div class="hero-stat-value text-gradient">&lt;60s</div>
+              <div class="hero-stat-label">Withdrawals</div>
+            </div>
+            <div>
+              <div class="hero-stat-value text-gradient">256-bit</div>
+              <div class="hero-stat-label">Encryption</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-right wallet-mockup">
+          <div class="mockup-card">
+            <div class="mockup-header">
+              <div class="mockup-logo">⚡ Vertext Pay</div>
+              <div class="mockup-chip"></div>
+            </div>
+            <div class="mockup-balance-label">Total Balance</div>
+            <div class="mockup-balance">$2,450.00</div>
+            <div class="mockup-footer">
+              <div class="mockup-actions">
+                <div class="mockup-action">↓ Deposit</div>
+                <div class="mockup-action">↑ Withdraw</div>
+              </div>
+              <div class="mockup-user">USD Wallet</div>
+            </div>
+          </div>
+
+          <!-- Floating badges -->
+          <div class="float-badge float-badge-1">
+            <div class="float-badge-icon green">✓</div>
+            <div>
+              <div class="float-badge-text">$500 Deposited</div>
+              <div class="float-badge-sub">Just now · Paystack</div>
+            </div>
+          </div>
+          <div class="float-badge float-badge-2">
+            <div class="float-badge-icon purple">↑</div>
+            <div>
+              <div class="float-badge-text">Withdrawal Sent</div>
+              <div class="float-badge-sub">GTBank · $200.00</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Features ───────────────────────────────────────────── -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Why Vertext Pay</div>
+        <h2 class="section-title">Everything you need, <span class="text-gradient">nothing you don't</span></h2>
+        <p class="section-subtitle">Built for speed and simplicity. No bloat, no confusion.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-title">Instant Deposits</div>
+          <p class="feature-desc">Fund your wallet in seconds using Paystack's secure popup. We accept cards, bank transfer, and more.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🏦</div>
+          <div class="feature-title">Bank Withdrawals</div>
+          <p class="feature-desc">Send money directly to your verified bank account via Paystack Transfers — fast and reliable.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <div class="feature-title">Secure by Design</div>
+          <p class="feature-desc">Every transaction is verified server-side via Supabase Edge Functions. Your secret key never touches the browser.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <div class="feature-title">Full History</div>
+          <p class="feature-desc">Every deposit and withdrawal is recorded with real-time status updates through webhooks.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌍</div>
+          <div class="feature-title">USD Wallet</div>
+          <p class="feature-desc">Hold and move US Dollars. Stable, widely accepted, and perfect for cross-border payments.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🚀</div>
+          <div class="feature-title">Lightning Fast</div>
+          <p class="feature-desc">Pure HTML, CSS, and JavaScript — no heavy frameworks. Loads in under a second on any connection.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How it works ───────────────────────────────────────── -->
+  <section class="how-it-works" id="how">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">How it works</div>
+        <h2 class="section-title">Three simple steps</h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-title">Create Your Account</div>
+          <p class="step-desc">Sign up with your email in under 30 seconds. Your wallet is created automatically.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-title">Deposit Funds</div>
+          <p class="step-desc">Click "Deposit", enter an amount, and complete payment through the Paystack popup. Funds appear instantly.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-title">Withdraw Anytime</div>
+          <p class="step-desc">Save your bank account once, then withdraw any amount with a single click. Arrives in minutes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ────────────────────────────────────────────────── -->
+  <section class="cta-section">
+    <div class="container">
+      <h2 class="cta-title">Ready to get started?</h2>
+      <p class="cta-sub">Create your free wallet in under a minute.</p>
+      <a href="auth.html?tab=signup" class="btn btn-primary btn-lg" id="cta-signup-btn">
+        ⚡ Create Free Wallet — It's Free
+      </a>
+    </div>
+  </section>
+
+  <!-- ── Footer ─────────────────────────────────────────────── -->
+  <footer>
+    <div class="container footer-inner">
+      <div class="logo" style="font-size:16px">
+        <span class="logo-icon" style="width:28px;height:28px;font-size:14px">⚡</span>
+        Vertext Pay
+      </div>
+      <div>© 2025 Vertext Pay. All rights reserved.</div>
+      <div style="color:var(--text-muted)">Powered by Paystack &amp; Supabase</div>
+    </div>
+  </footer>
+
+  <div id="toast-container"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    // Smooth navbar bg on scroll
+    window.addEventListener('scroll', () => {
+      const nav = document.getElementById('navbar');
+      if (window.scrollY > 20) {
+        nav.style.background = 'rgba(10,10,18,0.95)';
+      } else {
+        nav.style.background = 'rgba(10,10,18,0.8)';
+      }
+    });
+
+    // Handle signup tab param
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tab') === 'signup') {
+      window.location.href = 'auth.html?tab=signup';
+    }
+
+    // Fade in hero
+    document.querySelector('.hero-content').style.animation = 'fadeInUp 0.6s ease both';
+  </script>
+</body>
+</html>

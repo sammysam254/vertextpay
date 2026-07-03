@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Sign in or create your Vertext Pay wallet account." />
+  <title>Sign In — Vertext Pay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-orb-1 {
+      position: fixed;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: rgba(108,99,255,0.12);
+      filter: blur(100px);
+      top: -200px; right: -200px;
+      pointer-events: none;
+    }
+
+    .auth-orb-2 {
+      position: fixed;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: rgba(0,217,165,0.08);
+      filter: blur(80px);
+      bottom: -100px; left: -100px;
+      pointer-events: none;
+    }
+
+    .auth-box {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 440px;
+      animation: fadeInUp 0.5s ease both;
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .auth-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .auth-logo-icon {
+      width: 44px; height: 44px;
+      background: var(--grad-primary);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      box-shadow: var(--shadow-btn);
+    }
+
+    .auth-title {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .auth-subtitle {
+      color: var(--text-secondary);
+      font-size: 15px;
+    }
+
+    /* ── Tabs ─────────────────────────────────────────────── */
+    .auth-tabs {
+      display: flex;
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all var(--duration) var(--ease);
+    }
+
+    .auth-tab.active {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    /* ── Card ─────────────────────────────────────────────── */
+    .auth-card {
+      background: var(--grad-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-wrapper .form-input { padding-right: 48px; }
+
+    .toggle-password {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 4px;
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .auth-back {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 24px;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    .auth-back a { color: var(--primary-light); font-weight: 600; }
+    .auth-back a:hover { text-decoration: underline; }
+
+    .password-strength {
+      margin-top: 6px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .strength-bar {
+      height: 3px;
+      flex: 1;
+      border-radius: 2px;
+      background: var(--bg-elevated);
+      transition: background 0.3s;
+    }
+
+    .strength-bar.weak   { background: var(--danger); }
+    .strength-bar.medium { background: var(--warning); }
+    .strength-bar.strong { background: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-orb-1"></div>
+    <div class="auth-orb-2"></div>
+
+    <div class="auth-box">
+      <!-- Header -->
+      <div class="auth-header">
+        <a href="index.html" class="auth-logo">
+          <div class="auth-logo-icon">⚡</div>
+          <span>Vertext <span class="text-gradient">Pay</span></span>
+        </a>
+        <h1 class="auth-title">Welcome back</h1>
+        <p class="auth-subtitle">Sign in to access your wallet</p>
+      </div>
+
+      <!-- Card -->
+      <div class="auth-card">
+        <!-- Tabs -->
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-tab="login" id="tab-login">Sign In</button>
+          <button class="auth-tab" data-tab="signup" id="tab-signup">Create Account</button>
+        </div>
+
+        <!-- Alert placeholder -->
+        <div id="signup-alert" class="alert hidden"></div>
+        <div id="login-alert" class="alert hidden"></div>
+
+        <!-- ── Login Form ────────────────────────────────── -->
+        <form id="login-form" autocomplete="on">
+          <div class="form-group">
+            <label for="login-email" class="form-label">Email</label>
+            <input
+              type="email"
+              id="login-email"
+              class="form-input"
+              placeholder="you@email.com"
+              required
+              autocomplete="email"
+            />
+          </div>
+          <div class="form-group">
+            <label for="login-password" class="form-label">Password</label>
+            <div class="password-wrapper">
+              <input
+                type="password"
+                id="login-password"
+                class="form-input"
+                placeholder="Your password"
+                required
+                autocomplete="current-password"
+              />
+              <button type="button" class="toggle-password" data-target="login-password">👁</button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary w-full" id="login-submit-btn" style="margin-top:8px;">
+            <div class="spinner"></div>
+            <span class="btn-text">Sign In →</span>
+          </button>
+        </form>
+
+        <!-- ── Signup Form ───────────────────────────────── -->
+        <form id="signup-form" class="hidden" autocomplete="on">
+          <div class="form-group">
+            <label for="signup-name" class="form-label">Full Name</label>
+            <input
+              type="text"
+              id="signup-name"
+              class="form-input"
+              placeholder="John Doe"
+              required
+              autocomplete="name"
+            />
+          </div>
+          <div class="form-group">
+            <label for="signup-email" class="form-label">Email</label>
+            <input
+              type="email"
+              id="signup-email"
+              class="form-input"
+              placeholder="you@email.com"
+              required
+              autocomplete="email"
+            />
+          </div>
+          <div class="form-group">
+            <label for="signup-password" class="form-label">Password</label>
+            <div class="password-wrapper">
+              <input
+                type="password"
+                id="signup-password"
+                class="form-input"
+                placeholder="Min. 8 characters"
+                required
+                minlength="8"
+                autocomplete="new-password"
+              />
+              <button type="button" class="toggle-password" data-target="signup-password">👁</button>
+            </div>
+            <div class="password-strength">
+              <div class="strength-bar" id="bar-1"></div>
+              <div class="strength-bar" id="bar-2"></div>
+              <div class="strength-bar" id="bar-3"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="signup-confirm" class="form-label">Confirm Password</label>
+            <div class="password-wrapper">
+              <input
+                type="password"
+                id="signup-confirm"
+                class="form-input"
+                placeholder="Repeat password"
+                required
+                autocomplete="new-password"
+              />
+              <button type="button" class="toggle-password" data-target="signup-confirm">👁</button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary w-full" id="signup-submit-btn" style="margin-top:8px;">
+            <div class="spinner"></div>
+            <span class="btn-text">⚡ Create Wallet</span>
+          </button>
+          <p class="auth-footer" style="margin-top:14px">
+            By signing up, you agree to our
+            <a href="#" style="color:var(--primary-light)">Terms</a> and
+            <a href="#" style="color:var(--primary-light)">Privacy Policy</a>
+          </p>
+        </form>
+      </div>
+
+      <div class="auth-back">
+        <span>←</span>
+        <a href="index.html">Back to home</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Handle tab param from URL
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tab') === 'signup') {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab-signup').classList.add('active');
+      document.getElementById('login-form').classList.add('hidden');
+      document.getElementById('signup-form').classList.remove('hidden');
+      document.querySelector('.auth-title').textContent = 'Create your wallet';
+      document.querySelector('.auth-subtitle').textContent = 'Free to join. Ready in seconds.';
+    }
+
+    // Tab switching (also update title)
+    document.getElementById('tab-login').addEventListener('click', () => {
+      document.querySelector('.auth-title').textContent = 'Welcome back';
+      document.querySelector('.auth-subtitle').textContent = 'Sign in to access your wallet';
+    });
+    document.getElementById('tab-signup').addEventListener('click', () => {
+      document.querySelector('.auth-title').textContent = 'Create your wallet';
+      document.querySelector('.auth-subtitle').textContent = 'Free to join. Ready in seconds.';
+    });
+
+    // Password strength indicator
+    const pwInput = document.getElementById('signup-password');
+    pwInput?.addEventListener('input', () => {
+      const val = pwInput.value;
+      const bars = [
+        document.getElementById('bar-1'),
+        document.getElementById('bar-2'),
+        document.getElementById('bar-3'),
+      ];
+      bars.forEach(b => { b.className = 'strength-bar'; });
+
+      if (val.length >= 8) {
+        bars[0].classList.add(val.length >= 12 ? 'strong' : 'weak');
+      }
+      if (val.length >= 10 && /[A-Z]/.test(val)) {
+        bars[1].classList.add('medium');
+      }
+      if (val.length >= 12 && /[^a-zA-Z0-9]/.test(val)) {
+        bars[2].classList.add('strong');
+      }
+    });
+  </script>
+</body>
+</html>
