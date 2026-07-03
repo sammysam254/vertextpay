@@ -1,4 +1,4 @@
-project_id = "your-supabase-project-id"
+project_id = "pjoajdnhvswrkehomwrd"
 
 [api]
 enabled = true
@@ -16,9 +16,12 @@ major_version = 15
 enabled = true
 port = 54323
 
-[inbucket]
+[local_smtp]
 enabled = true
+host = "127.0.0.1"
 port = 54324
+admin_email = "admin@email.com"
+sender_name = "Vertext Pay"
 
 [storage]
 enabled = true
@@ -35,19 +38,7 @@ enable_signup = true
 [auth.email]
 enable_signup = true
 double_confirm_changes = true
-enable_confirmations = false   # Set to true in production
+enable_confirmations = false
 
 [edge_runtime]
 enabled = true
-
-[[edge_runtime.policy]]
-name = "verify-deposit"
-  
-[[edge_runtime.policy]]
-name = "initiate-withdrawal"
-
-[[edge_runtime.policy]]
-name = "paystack-webhook"
-
-[[edge_runtime.policy]]
-name = "list-banks"
