@@ -32,7 +32,7 @@ create table public.wallets (
   id          uuid primary key default uuid_generate_v4(),
   user_id     uuid not null references public.profiles(id) on delete cascade,
   balance     numeric(14,2) not null default 0.00,
-  currency    text not null default 'USD',
+  currency    text not null default 'KES',
   updated_at  timestamptz default now(),
   created_at  timestamptz default now(),
   constraint wallets_balance_non_negative check (balance >= 0)
