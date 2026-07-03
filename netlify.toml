@@ -25,16 +25,16 @@
     Permissions-Policy        = "camera=(), microphone=(), geolocation=()"
     Content-Security-Policy   = "default-src 'self'; script-src 'self' 'unsafe-inline' https://js.paystack.co https://*.paystack.com https://cdn.jsdelivr.net https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://paystack.com https://*.paystack.com; font-src 'self' https://fonts.gstatic.com https://paystack.com https://*.paystack.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.paystack.co https://paystack.com https://*.paystack.com; frame-src https://js.paystack.co https://paystack.com https://*.paystack.com; img-src 'self' data: https:;"
 
-# Cache static assets aggressively
+# Cache static assets (no-cache for updates, except assets)
 [[headers]]
   for = "/css/*"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
   for = "/js/*"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
   for = "/assets/*"
